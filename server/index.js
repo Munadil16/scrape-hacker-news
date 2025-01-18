@@ -75,14 +75,20 @@ wss.on("connection", async (ws) => {
     } catch (err) {
         console.log("Error while sending message: ", err);
     }
-
-    setInterval(async () => {
-        try {
-            const data = await scrapeData();
-            ws.send(JSON.stringify(data));
-        } catch (err) {
-            console.log("Error while sending scraped data: ", err.message);
-        }
-    }, 1000 * 60 * 2);
 });
+
+setInterval(async () => {
+    try {
+        const data = await scrapeData();
+        const message = JSON.stringify(data);
+
+        wss.clients.forEach((client) => {
+            if (client.readyState === client.OPEN) {
+                client.send(message)
+            }
+        });
+    } catch (err) {
+        console.log("Error while sending scraped data: ", err.message);
+    }
+}, 1000 * 60 * 2);
 
