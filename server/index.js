@@ -3,9 +3,11 @@ import axios from "axios";
 import express from "express";
 import * as cheerio from "cheerio";
 import { WebSocketServer } from "ws";
+import { PrismaClient } from "@prisma/client";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const db = new PrismaClient();
 
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
@@ -85,6 +87,12 @@ setInterval(async () => {
         wss.clients.forEach((client) => {
             if (client.readyState === client.OPEN) {
                 client.send(message)
+            }
+        });
+
+        await db.story.create({
+            data: {
+                data: message,
             }
         });
     } catch (err) {
