@@ -1,6 +1,13 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+type Ids = Array<string | undefined>;
+
+type Data = Array<{
+    content: string;
+    link: string | undefined;
+}>;
+
 export const onInitialConnection = async () => {
     try {
         const res = await axios.get("https://news.ycombinator.com/newest");
@@ -18,7 +25,7 @@ export const onInitialConnection = async () => {
 
         return count;
     } catch (err) {
-        console.log("Error while getting data during initial connection: ", err.message)
+        console.log("Error while getting data during initial connection: ", err)
     }
 }
 
@@ -28,7 +35,7 @@ export const scrapeData = async () => {
         const res = await axios.get("https://news.ycombinator.com/newest");
         const $ = cheerio.load(res.data);
 
-        const ids = [];
+        const ids: Ids = [];
         $("td.subtext").each((_, element) => {
             const duration = Number($(element).find("span.age").text().split(" ")[0]);
 
@@ -36,11 +43,11 @@ export const scrapeData = async () => {
                 return false;
             }
 
-            const id = $(element).find("span.score").attr("id").split("_")[1];
+            const id = $(element).find("span.score").attr("id")?.split("_")[1];
             ids.push(id);
         });
 
-        const data = [];
+        const data: Data = [];
         ids.map((id, _) => {
             const content = $(`#${id}`).find("span.titleline").text();
             const link = $(`#${id}`).find("span.titleline a").attr("href");
@@ -50,7 +57,7 @@ export const scrapeData = async () => {
 
         return data;
     } catch (err) {
-        console.log("Error while scraping data: ", err.message);
+        console.log("Error while scraping data: ", err);
     }
 }
 

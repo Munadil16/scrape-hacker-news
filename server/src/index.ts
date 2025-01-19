@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import { WebSocketServer } from "ws";
 import { PrismaClient } from "@prisma/client";
-import { onInitialConnection, scrapeData } from "./utils/ws.utils.js";
+import { WebSocket, WebSocketServer } from "ws";
+import { onInitialConnection, scrapeData } from "./utils/ws.utils";
 
 const app = express();
 const db = new PrismaClient();
@@ -14,12 +14,12 @@ const server = app.listen(PORT, () => {
 
 const wss = new WebSocketServer({ server });
 
-wss.on("connection", async (ws) => {
+wss.on("connection", async (ws: WebSocket) => {
     ws.on("error", (err) => console.error(err));
 
     try {
         const count = await onInitialConnection();
-        ws.send(`Number of stories in last 5 minutes: ${count.toString()}`);
+        ws.send(`Number of stories in last 5 minutes: ${count?.toString()}`);
     } catch (err) {
         console.log("Error while sending number of stories: ", err);
     }
@@ -36,16 +36,16 @@ setInterval(async () => {
             }
         });
 
-        data.forEach(async (val) => {
+        data?.forEach(async (val) => {
             await db.story.create({
                 data: {
                     content: val.content,
-                    link: val.link
+                    link: val.link ?? ""
                 }
             })
         });
     } catch (err) {
-        console.log("Error while sending scraped data: ", err.message);
+        console.log("Error while sending scraped data: ", err);
     }
 }, 1000 * 60 * 2);
 
