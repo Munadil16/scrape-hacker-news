@@ -1,7 +1,9 @@
 <h2 align="center">Hacker news scraper</h2>
 
 <h2>About the project</h2>
+
 ![Screenshot from 2025-01-19 12-09-29](https://github.com/user-attachments/assets/943e7cf3-7542-4fac-ba62-6575fbfa609c)
+
 ![Screenshot from 2025-01-19 12-10-22](https://github.com/user-attachments/assets/a2e52719-dc77-4d1d-92fa-45a9c62ade37)
 
 
