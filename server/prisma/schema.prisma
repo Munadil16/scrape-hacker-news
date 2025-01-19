@@ -9,5 +9,6 @@ datasource db {
 
 model Story {
     id      String      @id @default(cuid())
-    data    String
+    content String
+    link    String
 }
